@@ -14,7 +14,6 @@ spec:
   containers:
   - name: kubectl
     image: bitnami/kubectl:1.18
-    imagePullPolicy: Always
     command:
     - cat
 """
