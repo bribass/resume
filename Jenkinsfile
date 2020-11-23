@@ -16,6 +16,7 @@ spec:
     image: bitnami/kubectl:1.18
     command:
     - cat
+    tty: true
 """
 	}
       }
