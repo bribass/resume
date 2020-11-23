@@ -22,7 +22,7 @@ spec:
       }
       steps {
       	container('kubectl') {
-	  regport = sh script: 'kubectl get service/registry -n registry -o jsonpath={.spec.ports[0].nodePort}'
+	  regport = sh(script: 'kubectl get service/registry -n registry -o jsonpath={.spec.ports[0].nodePort}', returnStdout: true).trim()
 	  echo "Registry node port = $regport"
 	}
       }
