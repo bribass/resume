@@ -39,31 +39,31 @@ spec:
       	kubernetes {
 	  cloud 'kappa'
 	  yaml """
-	    apiVersion: v1
-	    kind: Pod
-	    metadata:
-	      annotations:
-		container.apparmor.security.beta.kubernetes.io/img: unconfined
-		container.seccomp.security.alpha.kubernetes.io/img: unconfined
-	    spec:
-	      containers:
-	      - name: img
-		image: r.j3ss.co/img
-		command:
-		- cat
-		tty: true
-		volumeMounts:
-		- name: img-cache
-		  mountPath: /home/user/.local/share/img
-	      securityContext:
-		runAsUser: 1000
-		runAsGroup: 1000
-		procMount: Unmasked
-	      volumes:
-	      - name: img-cache
-	        persistentVolumeClaim:
-		  claimName: build-img-cache
-	  """
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/img: unconfined
+    container.seccomp.security.alpha.kubernetes.io/img: unconfined
+spec:
+  containers:
+  - name: img
+    image: r.j3ss.co/img
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: img-cache
+      mountPath: /home/user/.local/share/img
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    procMount: Unmasked
+  volumes:
+  - name: img-cache
+    persistentVolumeClaim:
+      claimName: build-img-cache
+"""
 	}
       }
       steps {
