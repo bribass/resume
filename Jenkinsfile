@@ -68,9 +68,12 @@ spec:
       }
       steps {
 	container('img') {
+	  script {
+	    buildtag = "$BRANCH_NAME-$BUILD_NUMBER".replaceAll('[^a-zA-Z0-9]', "-")
+	  }
 	  sh """
-	    img build -t localhost:$regport/build/github-resume-build:$BUILD_TAG .
-	    img push --insecure-registry localhost:$regport/build/github-resume-build:$BUILD_TAG
+	    img build -t localhost:$regport/build/github-resume-build:$buildtag .
+	    img push --insecure-registry localhost:$regport/build/github-resume-build:$buildtag
 	  """
 	}
       }
