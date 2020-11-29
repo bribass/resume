@@ -35,7 +35,7 @@ spec:
 
     // Build the image used to build the resume document
     stage('Build Image') {
-      agent {`
+      agent {
       	kubernetes {
 	  cloud 'kappa'
 	  yaml """
