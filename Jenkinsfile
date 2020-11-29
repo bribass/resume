@@ -17,6 +17,9 @@ spec:
     command:
     - cat
     tty: true
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
 """
 	}
       }
