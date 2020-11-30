@@ -1,3 +1,6 @@
+## Locally generated files
+version.inc
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof

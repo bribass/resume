@@ -1,38 +1,43 @@
 pipeline {
-  agent none
-  stages {
-
-    // Determine the nodeport of the Docker registry service running in this cluster for use later in this pipeline
-    stage('Kubernetes Information') {
-      agent {
-      	kubernetes {
-	  cloud 'kappa'
-	  yaml """
+  agent {
+    kubernetes {
+      cloud 'kappa'
+      yaml """
 apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - name: kubectl
-    image: bitnami/kubectl:1.18
-    command:
-    - cat
+  - name: latex
+    image: bbassett/build-resume
+    imagePullPolicy: Always
     tty: true
+    volumeMounts:
+    - name: resume-secrets
+      mountPath: /tmp/secrets
+      readOnly: true
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000
+  volumes:
+  - name: resume-secrets
+    secret:
+      secretName: build-github-resume
+"""
+    }
+  }
+  stages {
+    stage('Build Resume') {
+      steps {
+      	container('latex') {
+	  sh """
+	    git describe --always > version.inc
+	    # Now show things, so I know what's up
+	    ls -l . /tmp/secrets
+	    cat /tmp/secrets/*
 """
 	}
       }
-      steps {
-      	container('kubectl') {
-	  script {
-	    regport = sh(script: 'kubectl get service/registry -n registry -o jsonpath={.spec.ports[0].nodePort}', returnStdout: true).trim()
-	    echo "Registry node port = $regport"
-	  }
-	}
-      }
     }
-
   }
 }
 
