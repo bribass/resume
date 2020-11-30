@@ -31,10 +31,15 @@ spec:
       	container('latex') {
 	  sh """
 	    git describe --always > version.inc
-	    # Now show things, so I know what's up
-	    ls -l . /tmp/secrets
-	    cat /tmp/secrets/*
-"""
+	    export TEXINPUTS=.:/tmp/secrets:
+	    mkdir out
+	    pdflatex -output-directory=out resume.tex
+	  """
+	}
+      }
+      post {
+	success {
+	  archiveArtifacts 'out/resume.pdf'
 	}
       }
     }

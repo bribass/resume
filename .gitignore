@@ -1,5 +1,6 @@
 ## Locally generated files
 version.inc
+/out/
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
