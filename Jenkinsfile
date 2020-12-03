@@ -38,44 +38,35 @@ spec:
       agent {
       	kubernetes {
 	  cloud 'kappa'
+	  defaultContainer 'kaniko'
 	  yaml """
 apiVersion: v1
 kind: Pod
-metadata:
-  annotations:
-    container.apparmor.security.beta.kubernetes.io/img: unconfined
-    container.seccomp.security.alpha.kubernetes.io/img: unconfined
 spec:
   containers:
-  - name: img
-    image: r.j3ss.co/img
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    imagePullPolicy: Always
     command:
-    - cat
+    - /busybox/cat
     tty: true
     volumeMounts:
-    - name: img-cache
+    - name: cache
       mountPath: /cache
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    procMount: Unmasked
   volumes:
-  - name: img-cache
+  - name: cache
     persistentVolumeClaim:
-      claimName: build-img-cache
+      claimName: build-kaniko-cache
 """
 	}
       }
       steps {
-	container('img') {
-	  script {
-	    buildtag = "$BRANCH_NAME-$BUILD_NUMBER".replaceAll('[^a-zA-Z0-9]', "-")
-	  }
-	  sh """
-	    img build --cache-from=type=local,src=/cache --cache-to=type=local,dest=/cache -t localhost:$regport/build/github-resume-build:$buildtag .
-	    img push --insecure-registry localhost:$regport/build/github-resume-build:$buildtag
-	  """
+	script {
+	  buildtag = "$BRANCH_NAME-$BUILD_NUMBER".replaceAll('[^a-zA-Z0-9]', "-")
 	}
+	sh """
+	  /kaniko/executor --context=`pwd` --destination=localhost:$regport/build/github-resume-build:$buildtag --insecure --skip-tls-verify --cache
+	"""
       }
     }
 
