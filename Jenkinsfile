@@ -72,7 +72,7 @@ spec:
 	}
 	unstash 'ca-cert'
 	sh """
-	  /kaniko/executor --context=`pwd` --destination=registry.k.bbassett.net/build/github-resume-build:$buildtag --registry-certificate=registry.k.bbassett.net=k-bbnet-ca.crt --cache
+	  /kaniko/executor --context=`pwd` --destination=registry.k.bbassett.net/build/github-resume-build:$buildtag --registry-certificate=registry.k.bbassett.net=k-bbnet-ca.crt --skip-tls-verify --cache
 	"""
       }
     }
