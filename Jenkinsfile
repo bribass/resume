@@ -29,6 +29,12 @@ spec:
 	    regport = sh(script: 'kubectl get service/registry -n registry -o jsonpath={.spec.ports[0].nodePort}', returnStdout: true).trim()
 	    echo "Registry node port = $regport"
 	  }
+	  sh "kubectl get secret k-bbnet-ca -n cert-manager -o jsonpath={.data.ca\\.crt} | base64 -d > k-bbnet-ca.crt"
+	}
+      }
+      post {
+	success {
+	  stash name: 'ca-cert', includes: 'k-bbnet-ca.crt'
 	}
       }
     }
@@ -64,8 +70,9 @@ spec:
 	script {
 	  buildtag = "$BRANCH_NAME-$BUILD_NUMBER".replaceAll('[^a-zA-Z0-9]', "-")
 	}
+	unstash 'ca-cert'
 	sh """
-	  /kaniko/executor --context=`pwd` --destination=localhost:$regport/build/github-resume-build:$buildtag --insecure --skip-tls-verify --cache
+	  /kaniko/executor --context=`pwd` --destination=registry.k.bbassett.net/build/github-resume-build:$buildtag --registry-certificate=registry.k.bbassett.net=k-bbnet-ca.crt --cache
 	"""
       }
     }
